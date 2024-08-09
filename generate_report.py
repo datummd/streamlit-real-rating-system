@@ -29,12 +29,15 @@ def generate_report(responses, user_details):
         "Feeding": 39,
         "Toileting": 33,
         "Other Functional Mobility": 30,
-        "Housework/Chores": 42,
+        "Housework Chores": 42,
         "Managing Money and Shopping": 24,
         "Meal Preparation": 24,
         "Personal Safety": 39,
-        "Travelling": 21,
-        "School-Related Skills": 24
+        "Traveling": 21,
+        "School Related Skills": 24,
+        "Personal Care Devices": 6,
+        "Female Dressing": 6
+
     }
 
     # Sum the scores for each category
@@ -46,45 +49,71 @@ def generate_report(responses, user_details):
     # Calculate the raw score percentage
     category_scores['Raw Score'] = category_scores['Score'].astype(str) + '/' + category_scores['Total Possible Score'].astype(str)
 
-    # Calculate raw ADL and IADL scores
-    adl_categories = ["Dressing", "Hygiene and Grooming", "Feeding", "Toileting", "Other Functional Mobility"]
-    iadl_categories = ["Housework/Chores", "Managing Money and Shopping", "Meal Preparation", "Personal Safety", "Travelling", "School-Related Skills"]
+    # Calculate total raw scores for ADL and IADL
+    adl_categories = ["Dressing", "Hygiene and Grooming", "Feeding", "Toileting","Female Dressing", "Other Functional Mobility"]
+    iadl_categories = ["Housework Chores", "Managing Money and Shopping", "Meal Preparation", "Personal Safety", "Traveling", "School Related Skills"]
 
-    adl_score = category_scores[category_scores['Category'].isin(adl_categories)]['Score'].sum()
-    iadl_score = category_scores[category_scores['Category'].isin(iadl_categories)]['Score'].sum()
+    adl_total_score = category_scores[category_scores['Category'].isin(adl_categories)]['Score'].sum()
+    adl_total_possible = category_scores[category_scores['Category'].isin(adl_categories)]['Total Possible Score'].sum()
+    adl_total_raw_score = f"{adl_total_score}/{adl_total_possible}"
 
-    # Gender-specific pronoun
-    pronoun = 'him' if user_details['child_sex'] == 'Male' else 'her'
-    pronoun_possessive = 'his' if user_details['child_sex'] == 'Male' else 'her'
+    iadl_total_score = category_scores[category_scores['Category'].isin(iadl_categories)]['Score'].sum()
+    iadl_total_possible = category_scores[category_scores['Category'].isin(iadl_categories)]['Total Possible Score'].sum()
+    iadl_total_raw_score = f"{iadl_total_score}/{iadl_total_possible}"
 
-    # Create the summary text
-    summary_text = (
-        f"{user_details['child_first_name']}'s parents, {user_details['person_completing_form']}, would like {pronoun} to become more independent in self-care and home and community skills. "
-        f"{pronoun_possessive.capitalize()} raw ADL score was {adl_score}. "
-        "Her standard score was less than 81.7 (lowest available score), and her percentile rank was less than 1%, which indicates a delay in self-care abilities compared to her peers. "
-        f"{pronoun_possessive.capitalize()} raw IADL score was {iadl_score}. "
-        "Her standard score was less than 84.8 (the lowest available score), and her percentile was less than 1%, which again indicates a delay in in-home and community skills."
+    # Custom CSS for emerald background and text color in table headers and total raw score section
+    st.markdown(
+        """
+        <style>
+        .emerald-header th {
+            background-color: #2ecc71 !important;
+            color: white !important;
+            font-weight: bold !important;
+        }
+        .emerald-score {
+            background-color: #2ecc71 !important;
+            color: white !important;
+            font-weight: bold !important;
+            padding: 5px;
+            text-align: right;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
     )
 
-    st.write(f"The REAL (The Roll Evaluation of Activities of Life) was completed by {user_details['person_completing_form']} ({user_details['relationship_to_child']}).")
-
-    
-    st.write("The REAL (The Roll Evaluation of Activities of Life) is a useful screening instrument to help assess children's self-care abilities at home, at school, and in the community. This standardised rating scale provides information on the activities of daily living (ADLs) and instrumental activities of daily living (IADLs).")
-    
     # Display the report table using Streamlit
     st.title("Activities of Daily Living (ADL) and Instrumental Activities of Daily Living (IADL) Report")
 
     # Display ADL Self-Care Domain
     st.subheader("Activities of Daily Living (ADL) Self-Care Domain")
     adl_scores = category_scores[category_scores['Category'].isin(adl_categories)]
-    st.table(adl_scores[['Category', 'Score', 'Raw Score']])
+    st.table(adl_scores[['Category', 'Raw Score']].style.set_table_styles([
+        {'selector': 'thead', 'props': [('class', 'emerald-header')]}
+    ]))
+
+    # Display total ADL score with emerald background
+    st.markdown(f"<div class='emerald-score'>**Total Raw Score**: {adl_total_raw_score}</div>", unsafe_allow_html=True)
 
     # Display IADL Home and Community Domain
     st.subheader("Instrumental Activities of Daily Living (IADL) Home and Community Domain")
     iadl_scores = category_scores[category_scores['Category'].isin(iadl_categories)]
-    st.table(iadl_scores[['Category', 'Score', 'Raw Score']])
+    st.table(iadl_scores[['Category', 'Raw Score']].style.set_table_styles([
+        {'selector': 'thead', 'props': [('class', 'emerald-header')]}
+    ]))
 
-    # Display the REAL Interpretation summary
+    # Display total IADL score with emerald background
+    st.markdown(f"<div class='emerald-score'>**Total Raw Score**: {iadl_total_raw_score}</div>", unsafe_allow_html=True)
+
+    # Generate the REAL Interpretation summary
+    pronoun = 'him' if user_details['child_sex'] == 'Male' else 'her'
+    pronoun_possessive = 'his' if user_details['child_sex'] == 'Male' else 'her'
+    summary_text = (
+        f"{user_details['child_first_name']}'s parents, {user_details['person_completing_form']}, would like {pronoun} to become more independent in self-care and home and community skills. "
+        f"{pronoun_possessive.capitalize()} raw ADL score was {adl_total_score}. "
+        f"{pronoun_possessive.capitalize()} raw IADL score was {iadl_total_score}. "
+    )
+
     st.subheader("REAL Interpretation:")
     st.write(summary_text)
     st.write("Regards,")
