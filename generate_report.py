@@ -83,10 +83,12 @@ def generate_report(responses, user_details):
     )
 
     # Display the report table using Streamlit
-    st.title("Activities of Daily Living (ADL) and Instrumental Activities of Daily Living (IADL) Report")
+
+    st.markdown(f"<p style='font-size: 24px; font-weight: 600;'>Activities of Daily Living (ADL) and Instrumental Activities of Daily Living (IADL) Report</p>", unsafe_allow_html=True)
 
     # Display ADL Self-Care Domain
-    st.subheader("Activities of Daily Living (ADL) Self-Care Domain")
+    
+    st.markdown(f"<p style='font-size: 20px; font-weight: 600;'>Activities of Daily Living (ADL) Self-Care Domain</p>", unsafe_allow_html=True)
     adl_scores = category_scores[category_scores['Category'].isin(adl_categories)]
     st.table(adl_scores[['Category', 'Raw Score']].style.set_table_styles([
         {'selector': 'thead', 'props': [('class', 'emerald-header')]}
@@ -96,7 +98,8 @@ def generate_report(responses, user_details):
     st.markdown(f"<div class='emerald-score'>**Total Raw Score**: {adl_total_raw_score}</div>", unsafe_allow_html=True)
 
     # Display IADL Home and Community Domain
-    st.subheader("Instrumental Activities of Daily Living (IADL) Home and Community Domain")
+   
+    st.markdown(f"<p style='font-size: 20px; font-weight: 600;'>Instrumental Activities of Daily Living (IADL) Home and Community Domain</p>", unsafe_allow_html=True)
     iadl_scores = category_scores[category_scores['Category'].isin(iadl_categories)]
     st.table(iadl_scores[['Category', 'Raw Score']].style.set_table_styles([
         {'selector': 'thead', 'props': [('class', 'emerald-header')]}
@@ -114,7 +117,9 @@ def generate_report(responses, user_details):
         f"{pronoun_possessive.capitalize()} raw IADL score was {iadl_total_score}. "
     )
 
-    st.subheader("REAL Interpretation:")
+    
+    st.markdown(f"<p style='font-size: 20px; font-weight: 600;'>REAL Interpretation:</p>", unsafe_allow_html=True)
+    
     st.write(summary_text)
     st.write("Regards,")
     st.write(user_details['evaluating_therapist'])

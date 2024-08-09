@@ -98,7 +98,7 @@ st.markdown(
 )
 
 # Streamlit app
-st.title("The REAL Rating Form")
+st.markdown(f"<p style='font-size: 20px; font-weight: 600;'>The REAL Rating Form</p>", unsafe_allow_html=True)
 
 # User details form
 if not st.session_state.form_submitted:
